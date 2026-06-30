@@ -5,6 +5,17 @@ import joblib
 import folium
 from streamlit_folium import st_folium
 
+import sys
+import os
+
+sys.path.append(
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..")
+    )
+)
+
+from src.uncertainty import predict_with_uncertainty
+
 # ----------------------------
 # Page Configuration
 # ----------------------------
@@ -266,6 +277,7 @@ with col3:
 if st.button("Predict AQI"):
 
     input_df = pd.DataFrame([[
+
         pm25,
         pm10,
         no,
@@ -278,7 +290,9 @@ if st.button("Predict AQI"):
         benzene,
         toluene,
         xylene
+
     ]], columns=[
+
         "PM2.5",
         "PM10",
         "NO",
@@ -291,12 +305,34 @@ if st.button("Predict AQI"):
         "Benzene",
         "Toluene",
         "Xylene"
+
     ])
 
-    prediction = model.predict(input_df)[0]
+    result = predict_with_uncertainty(input_df)
+    prediction = result["prediction"]
 
-    st.success(f"Predicted AQI: {prediction:.2f}")
+    c1, c2, c3 = st.columns(3)
 
+    with c1:
+        st.metric("Predicted AQI", f"{prediction:.2f}")
+
+    with c2:
+        st.metric("Uncertainty", f"±{result['std']:.2f}")
+
+    with c3:
+        st.metric(
+            "95% Confidence Interval",
+            f"{result['lower']:.1f} - {result['upper']:.1f}"
+        )
+
+    if result["std"] < 10:
+        st.success("✅ High Confidence")
+    elif result["std"] < 20:
+        st.warning("🟡 Moderate Confidence")
+    else:
+        st.error("🔴 Low Confidence")
+
+    # AQI Category
     if prediction <= 50:
         st.success("🟢 Good Air Quality")
     elif prediction <= 100:
@@ -309,3 +345,33 @@ if st.button("Predict AQI"):
         st.error("🟣 Very Poor")
     else:
         st.error("⚫ Severe")
+        
+st.divider()
+st.header("📊 Model Comparison")
+
+comparison = pd.read_csv("reports/model_comparison.csv")
+
+st.dataframe(
+    comparison,
+    use_container_width=True
+)
+
+fig = px.bar(
+    comparison,
+    x="Model",
+    y="R2 Score",
+    color="Model",
+    text="R2 Score",
+    title="Model Performance (R² Score)"
+)
+
+fig.update_traces(texttemplate="%{text:.3f}", textposition="outside")
+
+st.plotly_chart(fig, use_container_width=True)
+
+best_model = comparison.loc[
+    comparison["R2 Score"].idxmax(),
+    "Model"
+]
+
+st.success(f"🏆 Best Performing Model: {best_model}")
