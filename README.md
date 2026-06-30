@@ -319,16 +319,6 @@ Built using **Streamlit**.
 
 > ![alt text](image.png)
 
-Example:
-
-```
-images/
-│
-├── dashboard_home.png
-├── prediction_panel.png
-├── model_comparison.png
-└── correlation_heatmap.png
-```
 
 ---
 
