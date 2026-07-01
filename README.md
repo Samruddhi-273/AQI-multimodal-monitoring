@@ -175,6 +175,34 @@ The project uses the **Central Pollution Control Board (CPCB), India** air quali
 - AQI
 
 ---
+# 📥 Dataset Download
+
+The complete datasets are hosted on Google Drive because they exceed GitHub's file size limits.
+
+## Download Link
+
+**Google Drive Folder**
+
+👉 https://drive.google.com/drive/folders/1iWYzP6KodmiJC9qTo2IrhjGFve9uzp72?usp=sharing
+
+After downloading, place the files as follows:
+
+```text
+data/
+│
+├── raw/
+│   ├── station_hour.csv
+│   └── stations.csv
+│
+├── processed/
+│   ├── fused_dataset.csv
+│   ├── feature_engineered_dataset.csv
+│   ├── interpolated_dataset.csv
+│   ├── physics_validated_dataset.csv
+│   └── station_hour_quality.csv
+```
+
+The included sample dataset (`knn_sample_dataset.csv`) can be used to explore the project without downloading the full dataset.
 
 # 🔍 Data Quality Validation
 
@@ -403,17 +431,6 @@ python run_pipeline.py
 
 ---
 
-# 📚 Future Improvements
-
-- Real-time sensor data streaming
-- Satellite imagery integration
-- Drone-based pollution monitoring
-- Interactive GIS mapping using station coordinates
-- Explainable AI (SHAP)
-- Deep Learning based AQI forecasting
-- Weather data integration
-
----
 
 # 👩‍💻 Author
 
